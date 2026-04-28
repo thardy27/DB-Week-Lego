@@ -1,0 +1,51 @@
+//joining together the themes and sets tables
+create or replace table Themes_Sets_Lego_joined as (
+select
+    set_num
+    , s.theme_id as theme_id
+    , s.name as set_name
+    , s.year as year
+    , s.num_parts as num_parts
+    , t.name as theme_name
+    , s.img_url
+FROM themes t
+    join sets s
+        on t.id=s.theme_id
+);
+
+//joining together all of the inventory related tables
+create or replace table Inventory_related_tables_joined as (
+select
+    i.id as inventory_id
+    , i.version as inventory_version
+    , i.set_num as set_num
+    
+    , ip.part_num as part_num
+    ,ip.color_id as color_id
+    , ip.quantity as quantity
+    , ip.is_spare AS is_spare
+    , ip.img_url as img_url
+
+    , c.name as colour_name
+    , c.colour_rgb as colour_rgb
+    , c.is_trans as is_trans
+    , c.year_1 as colour_Year1
+    , c.year_2 as colour_Year2
+
+    , p.name as part_name
+    , p.part_cat_id as part_cat_id
+
+    , pc.c2 as part_category_name
+    
+from inventories  i
+    JOIN inventory_parts ip
+        on i.id=ip.inventory_id
+    Join colors c
+        on c.id=ip.color_id
+    join parts p
+        on p.part_num=ip.part_num
+    join part_categories pc
+        on pc.c1=p.part_cat_id
+WHERE
+    part_category_name = 'Plants & Trees' // Filtered only to botanical items
+);
